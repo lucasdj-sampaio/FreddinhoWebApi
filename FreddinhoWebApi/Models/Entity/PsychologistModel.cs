@@ -8,6 +8,10 @@
 
         public float Price { get; set; }
 
+        
+        public int AccountId { get; set; }
+        
+        public ICollection<AccountModel>? UserAccount { get; set; }
 
         public int AvailabilityId { get; set; }
 
