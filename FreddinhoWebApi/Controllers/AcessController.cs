@@ -2,6 +2,7 @@
 using FreddinhoWebApi.Models.Entity;
 using FreddinhoWebApi.Repository;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 
 namespace FreddinhoWebApi.Controllers
 {
@@ -19,7 +20,12 @@ namespace FreddinhoWebApi.Controllers
         public async Task<bool> Get([FromHeader] string email, [FromHeader] string password) =>
             await _repository.UserExist(email, password);
 
-
+        [HttpGet("/isalive")]
+        public async Task<IActionResult> IsAlive()
+        {
+            return Ok();
+        }
+            
         [HttpPost("/createnewaccount")]
         public async Task<(bool, string)> Post([FromBody] Account account) =>
             await _repository.InsertUser(account);
