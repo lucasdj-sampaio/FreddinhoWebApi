@@ -20,10 +20,10 @@ namespace FreddinhoWebApi.Controllers
         public async Task<bool> Get([FromHeader] string email, [FromHeader] string password) =>
             await _repository.UserExist(email, password);
 
-        [HttpGet("/isalive")]
-        public async Task<IActionResult> IsAlive()
+        [HttpGet("/getdependent")]
+        public async Task<IList<Dependent>> GetDependent([FromQuery] int userId)
         {
-            return Ok();
+            return await _repository.GetDependent(userId);
         }
             
         [HttpPost("/createnewaccount")]
