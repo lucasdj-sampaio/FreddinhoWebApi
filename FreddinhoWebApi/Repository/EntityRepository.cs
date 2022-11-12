@@ -58,5 +58,18 @@ namespace FreddinhoWebApi.Repository
                 return new(false, ex.Message);
             }
         }
+
+        public async Task<List<Dependent>> GetDependent(int userId)
+        {
+            try
+            {
+                return await _repository.DbDependent.Where(d => d.Id == userId).ToListAsync();
+
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }
