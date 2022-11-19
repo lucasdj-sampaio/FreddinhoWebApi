@@ -2,8 +2,6 @@
 using FreddinhoWebApi.Models.Entity;
 using FreddinhoWebApi.Repository;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata.Ecma335;
-
 namespace FreddinhoWebApi.Controllers
 {
     [ApiController]
@@ -16,18 +14,42 @@ namespace FreddinhoWebApi.Controllers
             _repository = repository;
 
 
-        [HttpGet("/validcredential")]
-        public async Task<bool> Get([FromHeader] string email, [FromHeader] string password) =>
-            await _repository.UserExist(email, password);
+        [HttpPost("/validcredential")]
+        public async Task<IActionResult> Post([FromBody] Account account) {
+            try{
+                Console.WriteLine($"email: {account.Email}, senha: {account.Password}");
+
+                return Ok(await _repository.UserExist(account.Email, account.Password));
+            }
+            catch (Exception e){
+                Console.WriteLine(e.Message);
+                return BadRequest(e);
+            }
+        }
+
+        [HttpPost("/getaccount")]
+        public async Task<Account> GetAccount([FromBody] Account account) =>
+            await _repository.ReturnAccount(account.Email, account.Password);
+
+        [HttpPost("/getaccountid")]
+        public async Task<IActionResult> GetAccountId([FromBody] Account account)
+        {
+            try{
+                return Ok((await _repository.ReturnAccount(account.Email, account.Password)).Id);
+            }catch (Exception e){
+                return BadRequest(e);
+            }
+        }
 
         [HttpGet("/getdependent")]
-        public async Task<IList<Dependent>> GetDependent([FromQuery] int userId)
+        public async Task<IActionResult> GetDependent([FromQuery] int userId)
         {
-            return await _repository.GetDependent(userId);
+            IList<Dependent> dep = await _repository.GetDependent(userId);
+            return Ok(dep);
         }
             
         [HttpPost("/createnewaccount")]
-        public async Task<(bool, string)> Post([FromBody] Account account) =>
+        public async Task<(bool, string)> PostUser([FromBody] Account account) =>
             await _repository.InsertUser(account);
 
 

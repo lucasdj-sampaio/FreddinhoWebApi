@@ -13,17 +13,35 @@ namespace FreddinhoWebApi.Repository
             _repository = dataBaseContext;
 
 
-        public async Task<bool> UserExist(string email, string password) =>
-            (await _repository.DbAccount
+        public async Task<Response> UserExist(string email, string password)
+        {
+            try{
+                bool result = (await _repository.DbAccount.Where(u => u.Email == email
+                    && u.Password == EncryptPassword(password)).ToListAsync()).Count >= 1 ? true : false;
+
+                return new Response(result);
+            }catch {
+                throw;
+            }
+        }
+
+        public async Task<Account> ReturnAccount(string email, string password) 
+        {
+            try{
+                return await _repository.DbAccount
                     .Where(u => u.Email == email
-                        && u.Password == EncryptPassword(password))
-                    .ToListAsync()).Count >= 1;
+                        && u.Password == EncryptPassword(password)).SingleOrDefaultAsync();
+            }
+            catch {
+                throw;
+            }
+        }
 
         public async Task<(bool, string)> InsertUser(Account account) 
         {
             try
             {
-                if ((await UserExist(account.Email, account.Password)))
+                if ((await UserExist(account.Email, account.Password)).success)
                     return new(false, "Usuário já cadastrado no Freddinho!");
 
                 account.Password = EncryptPassword(account.Password);
@@ -59,16 +77,15 @@ namespace FreddinhoWebApi.Repository
             }
         }
 
-        public async Task<List<Dependent>> GetDependent(int userId)
+        public async Task<IList<Dependent>> GetDependent(int userId)
         {
             try
             {
-                return await _repository.DbDependent.Where(d => d.Id == userId).ToListAsync();
-
+                return await _repository.DbDependent.Where(d => d.AccountModelId == userId).ToListAsync();
             }
-            catch
+            catch (Exception e)
             {
-                return null;
+               throw new Exception(e.Message);
             }
         }
     }
