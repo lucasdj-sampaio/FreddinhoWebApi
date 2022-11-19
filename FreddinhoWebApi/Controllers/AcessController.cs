@@ -17,8 +17,6 @@ namespace FreddinhoWebApi.Controllers
         [HttpPost("/validcredential")]
         public async Task<IActionResult> Post([FromBody] Account account) {
             try{
-                Console.WriteLine($"email: {account.Email}, senha: {account.Password}");
-
                 return Ok(await _repository.UserExist(account.Email, account.Password));
             }
             catch (Exception e){
